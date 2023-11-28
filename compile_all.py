@@ -3,6 +3,7 @@
 import argparse
 import platform
 import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from common import print_cmd
@@ -54,8 +55,17 @@ def main():
 
     perms = Path("shuffled.txt").read_text().splitlines()
     Path(args.dir).mkdir(exist_ok=True)
-    for perm in perms:
-        compile(perm, cc0=args.cc0, dir=args.dir, prefix=args.cmd)
+
+    with ThreadPoolExecutor(max_workers=6) as executor:
+        futures = {
+            executor.submit(
+                compile, perm, cc0=args.cc0, dir=args.dir, prefix=args.cmd
+            ): perm
+            for perm in perms
+        }
+        for future in as_completed(futures):
+            perm = futures[future]
+            print(f"finished permutation {perm}")
 
 
 if __name__ == "__main__":
