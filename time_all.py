@@ -15,7 +15,11 @@ def run(perm, *, dir, num_runs=30, stress=128):
     total = 0
     for _ in range(num_runs):
         start = time.perf_counter()
-        subprocess.run(cmd, capture_output=True)
+        try:
+            subprocess.run(cmd, capture_output=True)
+        except FileNotFoundError:
+            print(f"binary not found")
+            return None
         end = time.perf_counter()
         total += end - start
     return total / num_runs
