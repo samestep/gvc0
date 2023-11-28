@@ -93,3 +93,4 @@ study/data*
 recreated_*
 /export-*
 ./data/results/
+*.pyc

@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 
-import shlex
 import subprocess
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-
-def print_cmd(args):
-    cmd = " ".join(shlex.quote(arg) for arg in args)
-    print("$ " + cmd)
+from common import print_cmd
 
 
 def run_task(perm):
