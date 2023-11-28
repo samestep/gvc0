@@ -27,9 +27,7 @@ def main():
 
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         # Map the executor to the run_task function and perms
-        future_to_perm = {
-            executor.submit(run_task, perm): perm for perm in perms[1901:]
-        }
+        future_to_perm = {executor.submit(run_task, perm): perm for perm in perms}
 
         for future in as_completed(future_to_perm):
             perm = future_to_perm[future]
