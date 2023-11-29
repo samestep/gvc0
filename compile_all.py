@@ -46,7 +46,7 @@ def compile(perm, *, cc0, dir, prefix):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="./compile_all.py --cc0=$HOME/bitbucket/c0-lang/c0/cc0 --dir=clang -- clang -O3 -fbracket-depth=512"
+        description="./compile_all.py --cc0=$HOME/bitbucket/c0-lang/c0/cc0 --dir=clang -- clang -O3 -fbracket-depth=1024"
     )
     parser.add_argument("--cc0", metavar="PATH", help="cc0 installation", required=True)
     parser.add_argument("--dir", metavar="PATH", help="output directory", required=True)
