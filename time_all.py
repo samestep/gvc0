@@ -9,7 +9,7 @@ from pathlib import Path
 from common import print_cmd
 
 
-def run(perm, *, dir, num_runs=30, stress=128):
+def run(perm, *, dir, num_runs, stress):
     cmd = [f"{dir}/recreated_{perm}", "--stress", f"{stress}"]
     print_cmd(cmd)
     total = 0
@@ -26,10 +26,17 @@ def run(perm, *, dir, num_runs=30, stress=128):
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="Reports the number of seconds to run each permutation.",
+    )
     parser.add_argument(
         "--dir", metavar="PATH", help="directory of binaries", required=True
     )
+    parser.add_argument(
+        "--runs", metavar="NUM", help="number of runs per permutation", default=30
+    )
+    parser.add_argument("--stress", metavar="NUM", help="stress value", default=128)
     parser.add_argument("--csv", metavar="PATH", help="output CSV", required=True)
     args = parser.parse_args()
 
@@ -38,7 +45,7 @@ def main():
         writer = csv.DictWriter(f, fieldnames=["permutation", "seconds"])
         writer.writeheader()
         for perm in perms:
-            seconds = run(perm, dir=args.dir)
+            seconds = run(perm, dir=args.dir, num_runs=args.runs, stress=args.stress)
             writer.writerow({"permutation": perm, "seconds": seconds})
             f.flush()
 
