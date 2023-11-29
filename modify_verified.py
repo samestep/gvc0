@@ -6,8 +6,12 @@ def modify_c0_file(file_path):
         content = file.read()
 
     # Insert headers at the beginning
-    headers = '#use <stress>\n#use <conio>\n#use <args>\n'
-    content = headers + content
+    headers = ['stress', 'conio', 'args'] 
+    
+    for header in headers:
+        use_header = f'#use <{header}>\n'
+        if not use_header in content:
+            content = use_header + content
 
     # Add the updated readStress method before main()
     read_stress_method = (
@@ -21,9 +25,14 @@ def modify_c0_file(file_path):
     content = re.sub(r'(?=int main\(\))', read_stress_method, content)
 
     # Replace the first occurrence of int stress = <expression>;
-    content = re.sub(r'int stress = [^;]+;', 'int stress = readStress();', content)
+    content = re.sub(r'stress = [^;]+;', 'stress = readStress();', content)
 
     # Write the modified content back to the file
-    with open(file_path[:-2] + ".modified.c0", 'w') as file:
+    with open(file_path[:-3] + ".modified.c0", 'w') as file:
         file.write(content)
 
+modify_c0_file("test_modify/recreated_10.verified.c0")
+modify_c0_file("test_modify/recreated_12.verified.c0")
+modify_c0_file("test_modify/recreated_13.verified.c0")
+modify_c0_file("test_modify/recreated_15.verified.c0")
+modify_c0_file("test_modify/recreated_17.verified.c0")
