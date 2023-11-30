@@ -4,32 +4,39 @@ import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+# Regular expressions converted from Scala to Python
+arbitrary_stress_declaration = re.compile(r"(int )?(stress = [0-9]+;)")
+correct_stress_declaration = re.compile(
+    r"(int +main\(\s*\)\s\{[\s\S]*\n\s*int stress = [0-9]+;)"
+)
+
+# The stress reading function to inject
+read_stress = 'int readStress() {int* value = alloc(int); args_int("--stress", value); args_t input = args_parse(); printint(*value); return *value;}\n'
+
+
+def inject_stress(source):
+    # Replace the first occurrence of the correct stress declaration
+    with_stress_declaration = correct_stress_declaration.sub(
+        read_stress + "int main()\n{\nint stress = readStress();\nprintint(stress);\n",
+        source,
+        count=1,
+    )
+
+    # Remove any additional assignments to 'stress'
+    removed_additional_assignments = arbitrary_stress_declaration.sub(
+        "", with_stress_declaration
+    )
+
+    # Prepend additional includes
+    return "#use <conio>\n#use <args>\n" + removed_additional_assignments
+
 
 def modify_c0_file(perm):
     # Read the original file content
     content = Path(f"recreated/recreated_{perm}.verified.c0").read_text()
 
-    # Insert headers at the beginning
-    headers = ["stress", "conio", "args"]
-
-    for header in headers:
-        use_header = f"#use <{header}>\n"
-        if not use_header in content:
-            content = use_header + content
-
-    # Add the updated readStress method before main()
-    read_stress_method = (
-        "int readStress() {\n"
-        "    int* value = alloc(int); \n"
-        '    args_int("--stress", value); \n'
-        "    args_t input = args_parse(); \n"
-        "    return *value;\n"
-        "}\n\n"
-    )
-    content = re.sub(r"(?=int main\(\))", read_stress_method, content)
-
-    # Replace the first occurrence of int stress = <expression>;
-    content = re.sub(r"stress = [^;]+;", "stress = readStress();", content)
+    # Inject the stress function
+    content = inject_stress(content)
 
     # Write the modified content to a new file
     Path(f"stress/recreated_{perm}.verified.c0").write_text(content)
