@@ -23,7 +23,7 @@ def compile(perm, *, cc0, dir, prefix):
         f"{dir}/recreated_{perm}",
         f"-I{cc0}/include",
         f"-I{cc0}/runtime",
-        f"recreated/recreated_{perm}.verified.c0.c",
+        f"stress/recreated_{perm}.verified.c0.c",
         f"{cc0}/lib/cc0main.c",
         "-Wl,-rpath",
         f"{cc0}/lib",
@@ -32,6 +32,7 @@ def compile(perm, *, cc0, dir, prefix):
         "-Wl,-rpath",
         "src/main/resources/",
         f"{cc0}/lib/libconio{lib_ext}",
+        f"{cc0}/lib/libargs{lib_ext}",
         f"{cc0}/lib/libstring{lib_ext}",
         f"-L{cc0}/runtime",
         "-Wl,-rpath",
@@ -46,7 +47,7 @@ def compile(perm, *, cc0, dir, prefix):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="./compile_all.py --cc0=$HOME/bitbucket/c0-lang/c0/cc0 --dir=clang -- clang -O3 -fbracket-depth=1024"
+        description="./compile_all.py --cc0=$HOME/bitbucket/c0-lang/c0/cc0 --dir=o3 -- clang -O3 -fbracket-depth=1024"
     )
     parser.add_argument("--cc0", metavar="PATH", help="cc0 installation", required=True)
     parser.add_argument("--dir", metavar="PATH", help="output directory", required=True)
