@@ -34,9 +34,15 @@ def main():
         "--dir", metavar="PATH", help="directory of binaries", required=True
     )
     parser.add_argument(
-        "--runs", metavar="NUM", help="number of runs per permutation", default=30
+        "--runs",
+        metavar="N",
+        type=int,
+        help="number of runs per permutation",
+        default=30,
     )
-    parser.add_argument("--stress", metavar="NUM", help="stress value", default=128)
+    parser.add_argument(
+        "--stress", metavar="N", type=int, help="stress value", default=128
+    )
     parser.add_argument("--csv", metavar="PATH", help="output CSV", required=True)
     args = parser.parse_args()
 
