@@ -17,10 +17,7 @@ def get_real_time(name, recreated_number):
 
 def compile_all(recreated_number):
     compile(recreated_number)
-    before_time = get_real_time('before', recreated_number)
-    after_time = get_real_time('after', recreated_number)
-    difference = (1 - after_time / before_time) * 100 if before_time != 0 else None
-    return {'permutation': recreated_number, 'before': before_time, 'after': after_time, 'difference': difference}
+    print(f"Compiled {recreated_number}.")
 
 def time_all(recreated_number):
     before_time = get_real_time('before', recreated_number)
@@ -39,6 +36,8 @@ def main():
     # First compile them all
     with ThreadPoolExecutor(max_workers=50) as executor:
         executor.map(compile_all, files)
+
+    print("Finished compiling.")
 
     # Then time them all
     with ThreadPoolExecutor(max_workers=50) as executor:
