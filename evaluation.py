@@ -15,8 +15,14 @@ def get_real_time(name, recreated_number):
     real_time = re.search(r'real\s+([0-9m.]+)s', result.stderr)
     return float(real_time.group(1).replace('m', '')) if real_time else None
 
-def process_file(recreated_number):
+def compile_all(recreated_number):
     compile(recreated_number)
+    before_time = get_real_time('before', recreated_number)
+    after_time = get_real_time('after', recreated_number)
+    difference = (1 - after_time / before_time) * 100 if before_time != 0 else None
+    return {'permutation': recreated_number, 'before': before_time, 'after': after_time, 'difference': difference}
+
+def time_all(recreated_number):
     before_time = get_real_time('before', recreated_number)
     after_time = get_real_time('after', recreated_number)
     difference = (1 - after_time / before_time) * 100 if before_time != 0 else None
@@ -28,11 +34,15 @@ def compile_cc0_main():
 
 def main():
     compile_cc0_main()
-    files = ['14755', '14757'] # Path("shuffled.txt").read_text().splitlines()
+    files = Path("shuffled.txt").read_text().splitlines()
 
-    # Use ThreadPoolExecutor for parallelization
+    # First compile them all
     with ThreadPoolExecutor(max_workers=50) as executor:
-        results = list(executor.map(process_file, files))
+        executor.map(compile_all, files)
+
+    # Then time them all
+    with ThreadPoolExecutor(max_workers=50) as executor:
+        results = list(executor.map(time_all, files))
 
     # Create a DataFrame from the results and save it to a file
     df = pd.DataFrame(results)
